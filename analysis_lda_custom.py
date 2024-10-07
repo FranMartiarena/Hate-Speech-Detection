@@ -11,7 +11,7 @@ import pyLDAvis.gensim
 import pyLDAvis.gensim_models as gensimvis
 import pyLDAvis
 import os
-from file_paths import YOU_TOXIC, HAT_EVAL_DEV, HAT_EVAL_TEST, HAT_EVAL_TRAIN
+from file_paths import YOU_TOXIC, HAT_EVAL_DEV, HAT_EVAL_TEST, HAT_EVAL_TRAIN, HAT_EVAL
 
 # Definir función para preprocesar el texto
 def preprocess(text):
@@ -54,7 +54,7 @@ def analysis_lda_custom(archive):
     bow_corpus = [dictionary.doc2bow(doc) for doc in processed_text]
 
     # Entrenar el modelo LDA con 5 temas (puedes ajustar este número)
-    lda_model = LdaModel(bow_corpus, num_topics=3, id2word=dictionary, passes=15)
+    lda_model = LdaModel(bow_corpus, num_topics=5, id2word=dictionary, passes=15)
 
     # Mostrar los temas generados por el modelo
     for idx, topic in lda_model.print_topics(-1):
@@ -80,7 +80,9 @@ def analysis_lda_custom(archive):
     elif archive == HAT_EVAL_TEST:
         file = 'hateval_test_lda_visualization.html' 
     elif archive == HAT_EVAL_DEV:
-        file = 'hateval_dev_lda_visualization.html' 
+        file = 'hateval_dev_lda_visualization.html'
+    elif archive == HAT_EVAL:
+        file = 'hateval_convinado_lda_visualization.html'  
 
     # Guardar la visualización en un archivo HTML en la carpeta especificada
     output_file = os.path.join(output_dir, file)
@@ -94,6 +96,7 @@ text = """ingrese un valor numerico para elegir el dataset para el analisis:
 2 hatEval train 
 3 hatEval test
 4 hatEval dev
+5 hatEval
 """
 
 archive = ''
@@ -115,6 +118,8 @@ elif choice == 3:
     archive = HAT_EVAL_TEST  
 elif choice == 4:
     archive = HAT_EVAL_DEV  
+elif choice == 5:
+    archive = HAT_EVAL  
 else:
     print("Opción no válida.")
 
