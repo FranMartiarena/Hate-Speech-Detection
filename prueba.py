@@ -107,17 +107,19 @@ corpus = [dictionary.doc2bow(text) for text in documents]
 # Aplicar LDA para identificar temas
 lda_model = models.LdaModel(corpus, num_topics=5, id2word=dictionary, passes=15)
 
-# Crear una función para asignar todos los tópicos con sus respectivas probabilidades
-def assign_topic_distribution(lda_model, corpus, threshold=0.2):
-    topic_distributions = []
+# Crear una función para asignar solo el tópico de mayor probabilidad
+def assign_dominant_topic(lda_model, corpus):
+    dominant_topics = []
     for bow in corpus:
         topics = lda_model.get_document_topics(bow)
-        topic_distribution = {f"Topic_{topic[0]}": topic[1] for topic in topics if topic[1] > threshold}  # Filtrar por umbral
-        topic_distributions.append(topic_distribution)
-    return topic_distributions
+        # Buscar el tópico con mayor probabilidad
+        dominant_topic = max(topics, key=lambda x: x[1])
+        dominant_topics.append(f"Topic_{dominant_topic[0]}")  # Solo asignar el tópico más probable
+    return dominant_topics
+
 
 # Asignar las probabilidades de todos los tópicos a cada comentario
-df['topic_distribution'] = assign_topic_distribution(lda_model, corpus)
+df['topic_distribution'] = assign_dominant_topic(lda_model, corpus)
 
 # Guardar el CSV con la nueva columna de distribución de tópicos
 df.to_csv('archivo_con_distribucion_de_topicos.csv', index=False)
