@@ -54,7 +54,7 @@ def analysis_lda_custom(archive):
     bow_corpus = [dictionary.doc2bow(doc) for doc in processed_text]
 
     # Entrenar el modelo LDA con 5 temas (puedes ajustar este número)
-    lda_model = LdaModel(bow_corpus, num_topics=5, id2word=dictionary, passes=15)
+    lda_model = LdaModel(bow_corpus, num_topics=2, id2word=dictionary, passes=15)
 
     # Mostrar los temas generados por el modelo
     for idx, topic in lda_model.print_topics(-1):

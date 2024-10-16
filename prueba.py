@@ -82,7 +82,9 @@ def topic_dominante():
     print("Archivo guardado con las etiquetas de temas.")
 
 #-----------------------------------------------------------------------------------------------
-
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('punkt_tab')
 
 # Cargar el archivo CSV
 df = pd.read_csv(HAT_EVAL)
@@ -105,7 +107,7 @@ dictionary = corpora.Dictionary(documents)
 corpus = [dictionary.doc2bow(text) for text in documents]
 
 # Aplicar LDA para identificar temas
-lda_model = models.LdaModel(corpus, num_topics=5, id2word=dictionary, passes=15)
+lda_model = models.LdaModel(corpus, num_topics=2, id2word=dictionary, passes=15)
 
 # Crear una función para asignar solo el tópico de mayor probabilidad
 def assign_dominant_topic(lda_model, corpus):
@@ -122,6 +124,6 @@ def assign_dominant_topic(lda_model, corpus):
 df['topic_distribution'] = assign_dominant_topic(lda_model, corpus)
 
 # Guardar el CSV con la nueva columna de distribución de tópicos
-df.to_csv('archivo_con_distribucion_de_topicos.csv', index=False)
+df.to_csv('hateval_topics.csv', index=False)
 
 print("Archivo guardado con las distribuciones de tópicos.")

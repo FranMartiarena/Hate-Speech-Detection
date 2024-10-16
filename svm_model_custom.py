@@ -76,7 +76,7 @@ def svm_model_custom(train,test):
     # Los mejores parámetros encontrados
     #print(grid_search.best_params_)
 
-    #svm_model.fit(x_train_tfidf, y_train)
+    svm_model.fit(x_train_tfidf, y_train)
 
     # Predecir en el conjunto de prueba
     y_pred = svm_model.predict(x_test_tfidf)
