@@ -26,10 +26,11 @@ def longitud_comentarios(bool):
     # Visualización de la distribución de longitud de los comentarios
     plt.figure(figsize=(10, 6))
     sns.histplot(df['longitud'],  kde=True)
-    plt.title('Distribución de la longitud de los comentarios youtoxic')
+    plt.title(f'Distribución de la longitud de los comentarios de {"youtoxic" if bool ==1 else "hateval"}')
     plt.xlabel('Número de palabras')
     plt.ylabel('Frecuencia')
-    plt.xlim(0, 200)
+    plt.xlim(0, 200 if bool ==1 else 100)
+    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_long_promedio.png')  
     plt.show()
 
 #0 para hateval, 1 para youtoxic
@@ -50,6 +51,7 @@ def frecuencia_palabras(bool):
     nltk.download('stopwords')
     nltk.download('punkt')
     nltk.download('wordnet')
+    nltk.download('punkt_tab')
 
     if bool == 1:
         df = pd.read_csv('../data_set/youtoxic_english_1000.csv')
@@ -95,6 +97,21 @@ def frecuencia_palabras(bool):
     for par in frecuencia_palabras_procesadas.most_common(10):
         print(f"Palabra: {par[0]}, Frecuencia: {par[1]}")
 
+    palabras = [item[0] for item in frecuencia_palabras_procesadas.most_common(10)]
+    valores = [item[1] for item in frecuencia_palabras_procesadas.most_common(10)]
+
+    # Crear el gráfico de barras
+    plt.figure(figsize=(10, 6))  # Tamaño opcional del gráfico
+    plt.bar(palabras, valores, color='skyblue')
+
+    # Añadir etiquetas y título
+    plt.xlabel('Palabras')
+    plt.ylabel('Frecuencia')
+    plt.title(f'Frecuencia de palabras en {"youtoxic" if bool ==1 else "hateval"}')
+    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_palabras.png')  
+    # Mostrar el gráfico
+    plt.show()
+
 #bool: 0 para hateval y 1 para youtoxic
 #n: para n-grama
 #hs: 0 para ver n-gramas de coments sin odio, 1 para ver ngramas de coments con odio, y 2 para general
@@ -104,7 +121,7 @@ def n_grama(bool, n, hs, hashtags):
     nltk.download('stopwords')
     nltk.download('punkt')
     nltk.download('wordnet')
-
+    
     if bool == 1:
         df = pd.read_csv('../data_set/youtoxic_english_1000.csv')
         col = "Text"
@@ -166,6 +183,20 @@ def n_grama(bool, n, hs, hashtags):
     for par in frecuencia.most_common(10):
         print(f"N-grama: {par[0]}, Frecuencia: {par[1]}")
 
-n_grama(0, 3, 1, 1)
+    palabras = [" ".join(item[0]) for item in frecuencia.most_common(10)]
+    valores = [item[1] for item in frecuencia.most_common(10)]
+
+    # Crear el gráfico de barras
+    plt.figure(figsize=(12, 8))  # Tamaño opcional del gráfico
+    plt.bar(palabras, valores, color='skyblue')
+
+    # Añadir etiquetas y título
+    plt.xlabel(f'{n}-grama')
+    plt.ylabel('Frecuencia')
+    plt.title(f'Frecuencia de {n}-gramas en {"youtoxic" if bool ==1 else "hateval"}')
+    plt.xticks(rotation=30)  # Rotar las etiquetas 45 grados
+    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_ngram_210.png')  
+    # Mostrar el gráfico
+    plt.show()
 
 
