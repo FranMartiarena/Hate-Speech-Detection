@@ -66,7 +66,7 @@ En general vemos que aparecen las mismas palabras en los 3 analisis, por ahi al 
 Podemos observar que "thug" aparece en los de odio y no en los demas, asique podria tratarse de una palabra caracteristica en el discurso de odio racista.
 
 ---
-### 2-grama HatEval de comentarios con odio
+### Bi-grama HatEval de comentarios con odio
 
 Con hashtags               |  Sin hashtags             |
 :-------------------------:|:-------------------------:|
