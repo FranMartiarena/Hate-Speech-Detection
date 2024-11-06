@@ -11,7 +11,8 @@ import nltk
 from nltk import ngrams
 
 #0 para hateval, 1 para youtoxic
-def longitud_comentarios(bool):
+#hs: 0 para ver la frecuencia en comentarios sin odio, 1 para los coment con odio, sino general
+def longitud_comentarios(bool, hs):
     # Leer archivo CSV
     if bool == 1:
         df = pd.read_csv('../data_set/youtoxic_english_1000.csv')
@@ -19,16 +20,26 @@ def longitud_comentarios(bool):
     else:
         df = pd.read_csv('../data_set/hateval2019_en_convinado.csv')
         col = "text"
+
+    if hs == 0:
+        comentarios_filtrados = df[df['IsHatespeech' if bool==1 else 'HS'] == 0][col]
+    elif hs == 1:
+        comentarios_filtrados = df[df['IsHatespeech' if bool==1 else 'HS'] == 1][col]
+    else:
+        comentarios_filtrados = df[col]
+
+
     # Calcular la longitud de cada comentario (en palabras o caracteres)
-    # Aquí se calcula en palabras; si prefieres caracteres, usa: df['longitud'] = df['comentario'].str.len()
-    df['longitud'] = df[col].apply(lambda x: len(str(x).split()))
+    # Aquí se calcula en palabras; 
+    long_comentarios_filtrados = comentarios_filtrados.apply(lambda x: len(str(x).split()))
 
     # Visualización de la distribución de longitud de los comentarios
     plt.figure(figsize=(10, 6))
-    sns.histplot(df['longitud'],  kde=True)
+    sns.histplot(long_comentarios_filtrados, kde=True)
     plt.title(f'Distribución de la longitud de los comentarios de {"youtoxic" if bool ==1 else "hateval"}')
     plt.xlabel('Número de palabras')
     plt.ylabel('Frecuencia')
+    #plt.xticks([0,20,40,60,80,100,200])  # Agrega 20 específicamente aquí
     plt.xlim(0, 200 if bool ==1 else 100)
     plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_long_promedio.png')  
     plt.show()
@@ -44,8 +55,9 @@ def balanceo_clases(bool):
         df = pd.read_csv('../data_set/hateval2019_en_convinado.csv')
         print(f"\n{df['HS'].value_counts()}\n")
 
-#0 para hateval, 1 para youtoxic    
-def frecuencia_palabras(bool):
+#bool: 0 para hateval, 1 para youtoxic
+#hs: 0 para ver la frecuencia en comentarios sin odio, 1 para los coment con odio, sino general
+def frecuencia_palabras(bool, hs):
 
     # Descargar recursos necesarios de NLTK si no lo has hecho antes
     nltk.download('stopwords')
@@ -82,9 +94,17 @@ def frecuencia_palabras(bool):
         # Reconstruir el texto limpio
         return " ".join(palabras)
     
-    df['comentario_procesado'] = df[col].apply(lambda x: preprocesar_comentario(str(x)))
+    if hs == 0:
+        comentarios_filtrados = df[df['IsHatespeech' if bool==1 else 'HS'] == 0][col]
+    elif hs == 1:
+        comentarios_filtrados = df[df['IsHatespeech' if bool==1 else 'HS'] == 1][col]
+    else:
+        comentarios_filtrados = df[col]
+
+    comentario_procesado = comentarios_filtrados.apply(lambda x: preprocesar_comentario(str(x)))
+
     # Concatenar todos los comentarios procesados en una sola cadena de texto
-    todos_los_comentarios_procesados = " ".join(df['comentario_procesado'])
+    todos_los_comentarios_procesados = " ".join(comentario_procesado)
 
     # Dividir en palabras para contar su frecuencia
     palabras_procesadas = todos_los_comentarios_procesados.split()  # La tokenización ya se hizo en el preprocesamiento
@@ -108,7 +128,7 @@ def frecuencia_palabras(bool):
     plt.xlabel('Palabras')
     plt.ylabel('Frecuencia')
     plt.title(f'Frecuencia de palabras en {"youtoxic" if bool ==1 else "hateval"}')
-    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_palabras.png')  
+    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_palabras2.png')  
     # Mostrar el gráfico
     plt.show()
 
@@ -195,8 +215,8 @@ def n_grama(bool, n, hs, hashtags):
     plt.ylabel('Frecuencia')
     plt.title(f'Frecuencia de {n}-gramas en {"youtoxic" if bool ==1 else "hateval"}')
     plt.xticks(rotation=30)  # Rotar las etiquetas 45 grados
-    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_ngram_210.png')  
+    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_ngram_311.png')  
     # Mostrar el gráfico
     plt.show()
 
-
+n_grama(1, 3, 1, 1)
