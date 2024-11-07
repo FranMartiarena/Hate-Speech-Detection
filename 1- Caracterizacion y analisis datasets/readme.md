@@ -72,11 +72,14 @@ Con hashtags               |  Sin hashtags             |
 :-------------------------:|:-------------------------:|
 ![alt text](imagenes/hateval_frec_ngram_211.png "Title")  |  ![alt text](imagenes/hateval_frec_ngram_210.png "Title")
 
+Vemos que si dejamos los hashtags, surgen bi-gramas como "trump maga". Tambien notamos que no hay un bi-grama muy frecuente, teniendo en cuenta que hay alrededor de 7000 comentarios de odio.
 ### Bi-grama HatEval de comentarios sin odio
 
 Con hashtags               |  Sin hashtags             |
 :-------------------------:|:-------------------------:|
 ![alt text](imagenes/hateval_frec_ngram_201.png "Title")  |  ![alt text](imagenes/hateval_frec_ngram_200.png "Title")
+
+Al igual que antes hay una minima diferencia, pero llama la antencion encontrar "ass bitch", sera que se usa como un insulto general?
 
 ### Tri-grama HatEval de comentarios con odio
 
