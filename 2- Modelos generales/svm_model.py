@@ -10,8 +10,8 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
 
 # Cargar los datos de test hateval
-train = pd.read_csv('data_set/hateval2019_en_train.csv')
-test = pd.read_csv('data_set/hateval2019_en_test.csv')
+train = pd.read_csv('../data_set/hateval2019_en_train.csv')
+test = pd.read_csv('../data_set/hateval2019_en_test.csv')
 
 #Tendremos que transformar el texto en una representación numérica adecuada para SVM.
 #Una técnica común es usar TF-IDF (Term Frequency-Inverse Document Frequency) para convertir el texto en vectores de características.

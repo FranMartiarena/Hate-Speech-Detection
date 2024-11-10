@@ -11,6 +11,12 @@ cantidad de etiquetas y simpleza.
 <center><h1>Analisis exploratorio de los datos</h1></center>
 
 ### Balanceo de clases HatEval
+![alt text](imagenes/hateval_conteo_clases2.png "Title")
+
+Estas son los conteos de clases de los 3 archivos que vienen por defecto en HatEval ingles. Siempre hay mas ejemplos que no son HS, y como en el paper no dice mucho, asumimos que puede ser porque, en general, el discurso de odio es menos común en la mayoría de los contextos.  
+
+Si combinamos los 3 datasets nos queda:
+
 ![alt text](imagenes/hateval_conteo_clases.png "Title")
 
 Vemos que hay muchos mas comentarios que no son discurso de odio, por lo tanto un modelo entrenado sobre estos datos puede que detecte mucho mejor lo que no es odio. Probaremos entrenar un modelo con estas cantidades, y luego haciendo un balanceo, que sera un sub-sampling.
@@ -79,7 +85,7 @@ Con hashtags               |  Sin hashtags             |
 :-------------------------:|:-------------------------:|
 ![alt text](imagenes/hateval_frec_ngram_201.png "Title")  |  ![alt text](imagenes/hateval_frec_ngram_200.png "Title")
 
-Al igual que antes hay una minima diferencia, pero llama la antencion encontrar "ass bitch", sera que se usa como un insulto general?
+Al igual que antes hay una minima diferencia.
 
 ### Tri-grama HatEval de comentarios con odio
 
@@ -87,6 +93,7 @@ Con hashtags               |  Sin hashtags             |
 :-------------------------:|:-------------------------:|
 ![alt text](imagenes/hateval_frec_ngram_311.png "Title")  |  ![alt text](imagenes/hateval_frec_ngram_310.png "Title")
 
+Acá hay un notable cambio si dejamos los hashtags, pueden llegar a ser indicadores de odio.
 ### Tri-grama HatEval de comentarios sin odio
 
 Con hashtags               |  Sin hashtags             |

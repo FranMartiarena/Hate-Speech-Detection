@@ -9,6 +9,34 @@ from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 import nltk
 from nltk import ngrams
+from sklearn.utils import resample
+
+def eliminar_hashtags(texto):
+        # Expresión regular que encuentra hashtags con o sin espacios entre ellos
+        return re.sub(r'#\w+', '', texto)
+    
+def preprocesar_comentario(texto, hashtags):
+    stop_words = set(stopwords.words('english'))  
+    lemmatizer = WordNetLemmatizer()  # Para lematización
+    # Convertir a minúsculas
+    texto = texto.lower()
+    
+    if hashtags == 0:
+        texto = eliminar_hashtags(texto)
+
+    # Eliminar caracteres especiales y números
+    texto = re.sub(r'[^a-zA-Z\s]', '', texto)
+    
+    # Tokenizar
+    palabras = word_tokenize(texto)
+    
+    # Eliminar stopwords
+
+    palabras = [lemmatizer.lemmatize(palabra) for palabra in palabras if palabra not in stop_words]
+    
+    # Reconstruir el texto limpio
+    return " ".join(palabras)
+
 
 #0 para hateval, 1 para youtoxic
 #hs: 0 para ver la frecuencia en comentarios sin odio, 1 para los coment con odio, sino general
@@ -52,12 +80,23 @@ def balanceo_clases(bool):
         print(f"\n{df['IsHatespeech'].value_counts()}\n")
         print(f"\n{df['IsToxic'].value_counts()}\n")
     else:
+        print("Hateval combinado:")
         df = pd.read_csv('../data_set/hateval2019_en_convinado.csv')
+        print(f"\n{df['HS'].value_counts()}\n")
+        print("Hateval train:")
+        df = pd.read_csv('../data_set/hateval2019_en_train.csv')
+        print(f"\n{df['HS'].value_counts()}\n")
+        print("Hateval test:")
+        df = pd.read_csv('../data_set/hateval2019_en_test.csv')
+        print(f"\n{df['HS'].value_counts()}\n")
+        print("Hateval dev:")
+        df = pd.read_csv('../data_set/hateval2019_en_dev.csv')
         print(f"\n{df['HS'].value_counts()}\n")
 
 #bool: 0 para hateval, 1 para youtoxic
 #hs: 0 para ver la frecuencia en comentarios sin odio, 1 para los coment con odio, sino general
-def frecuencia_palabras(bool, hs):
+#hashtags: 0 para eliminarlos, 1 para dejarlos 
+def frecuencia_palabras(bool, hs, hashtags):
 
     # Descargar recursos necesarios de NLTK si no lo has hecho antes
     nltk.download('stopwords')
@@ -71,28 +110,6 @@ def frecuencia_palabras(bool, hs):
     else:
         df = pd.read_csv('../data_set/hateval2019_en_convinado.csv')
         col = "text"
-
-    # Inicializar herramientas de procesamiento de NLTK
-    stop_words = set(stopwords.words('english'))  # Usa 'spanish' para stopwords en español
-    lemmatizer = WordNetLemmatizer()  # Para lematización
-
-    
-    def preprocesar_comentario(texto):
-        # Convertir a minúsculas
-        texto = texto.lower()
-        
-        # Eliminar caracteres especiales y números
-        texto = re.sub(r'[^a-zA-Z\s]', '', texto)
-        
-        # Tokenizar
-        palabras = word_tokenize(texto)
-        
-        # Eliminar stopwords y aplicar lematización
-
-        palabras = [lemmatizer.lemmatize(palabra) for palabra in palabras if palabra not in stop_words]
-        
-        # Reconstruir el texto limpio
-        return " ".join(palabras)
     
     if hs == 0:
         comentarios_filtrados = df[df['IsHatespeech' if bool==1 else 'HS'] == 0][col]
@@ -101,7 +118,7 @@ def frecuencia_palabras(bool, hs):
     else:
         comentarios_filtrados = df[col]
 
-    comentario_procesado = comentarios_filtrados.apply(lambda x: preprocesar_comentario(str(x)))
+    comentario_procesado = comentarios_filtrados.apply(lambda x: preprocesar_comentario(str(x), hashtags))
 
     # Concatenar todos los comentarios procesados en una sola cadena de texto
     todos_los_comentarios_procesados = " ".join(comentario_procesado)
@@ -128,7 +145,7 @@ def frecuencia_palabras(bool, hs):
     plt.xlabel('Palabras')
     plt.ylabel('Frecuencia')
     plt.title(f'Frecuencia de palabras en {"youtoxic" if bool ==1 else "hateval"}')
-    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_palabras2.png')  
+    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_palabras1.png')  
     # Mostrar el gráfico
     plt.show()
 
@@ -147,34 +164,7 @@ def n_grama(bool, n, hs, hashtags):
         col = "Text"
     else:
         df = pd.read_csv('../data_set/hateval2019_en_convinado.csv')
-        col = "text"
-
-    # Inicializar herramientas de procesamiento de NLTK
-    stop_words = set(stopwords.words('english'))  # Usa 'spanish' para stopwords en español
-    
-    def eliminar_hashtags(texto):
-        # Expresión regular que encuentra hashtags con o sin espacios entre ellos
-        return re.sub(r'#\w+', '', texto)
-    
-    def preprocesar_comentario(texto):
-        # Convertir a minúsculas
-        texto = texto.lower()
-        
-        if hashtags == 0:
-            texto = eliminar_hashtags(texto)
-
-        # Eliminar caracteres especiales y números
-        texto = re.sub(r'[^a-zA-Z\s]', '', texto)
-        
-        # Tokenizar
-        palabras = word_tokenize(texto)
-        
-        # Eliminar stopwords
-
-        palabras = [palabra for palabra in palabras if palabra not in stop_words]
-        
-        # Reconstruir el texto limpio
-        return " ".join(palabras)
+        col = "text" 
     
     # Función para generar n-gramas
     def generar_ngrams(comentarios, n):
@@ -191,7 +181,7 @@ def n_grama(bool, n, hs, hashtags):
     else:
         comentarios_filtrados = df[col]
 
-    comentarios_procesados = comentarios_filtrados.apply(preprocesar_comentario)
+    comentarios_procesados = comentarios_filtrados.apply(preprocesar_comentario, hashtags=hashtags)
 
     ngram = generar_ngrams(comentarios_procesados, n)
     
@@ -215,8 +205,46 @@ def n_grama(bool, n, hs, hashtags):
     plt.ylabel('Frecuencia')
     plt.title(f'Frecuencia de {n}-gramas en {"youtoxic" if bool ==1 else "hateval"}')
     plt.xticks(rotation=30)  # Rotar las etiquetas 45 grados
-    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_ngram_311.png')  
+    plt.savefig(f'{"youtoxic"if bool ==1 else "hateval"}_frec_ngram_300.png')  
     # Mostrar el gráfico
     plt.show()
 
-n_grama(1, 3, 1, 1)
+def balance_hateval():
+    df = pd.read_csv('../data_set/hateval2019_en_convinado.csv')
+    # Separar las clases
+    df_majority = df[df['HS'] == 0]  # Clase mayoritaria
+    df_minority = df[df['HS'] == 1]  # Clase minoritaria
+    print(f"\n{df['HS'].value_counts()}\n")
+    # Submuestrear la clase mayoritaria
+    df_majority_downsampled = resample(df_majority,
+                                    replace=False,
+                                    n_samples=len(df_minority),
+                                    random_state=42)
+
+    # Combinar las dos clases
+    df_balanced = pd.concat([df_majority_downsampled, df_minority])
+
+    print(f"\n{df_balanced['HS'].value_counts()}\n")
+
+    df_balanced.to_csv('hateval2019_en_convinado_balanceado.csv', index=False)
+
+def balance_youtoxic():
+    df = pd.read_csv('../data_set/youtoxic_english_1000.csv')
+    # Separar las clases
+    df_majority = df[df['IsHatespeech'] == 0]  # Clase mayoritaria
+    df_minority = df[df['IsHatespeech'] == 1]  # Clase minoritaria
+    print(f"\n{df['IsHatespeech'].value_counts()}\n")
+    # Submuestrear la clase mayoritaria
+    df_majority_downsampled = resample(df_majority,
+                                    replace=False,
+                                    n_samples=len(df_minority),
+                                    random_state=42)
+
+    # Combinar las dos clases
+    df_balanced = pd.concat([df_majority_downsampled, df_minority])
+
+    print(f"\n{df_balanced['IsHatespeech'].value_counts()}\n")
+
+    df_balanced.to_csv('youtoxic_english_1000_balanceado.csv', index=False)
+
+
