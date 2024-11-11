@@ -27,7 +27,7 @@ from sklearn.decomposition import PCA
 import gensim.downloader as api
 from nltk.stem import WordNetLemmatizer
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-
+import seaborn as sns
 
 nltk.download('stopwords')
 lemmatizer = WordNetLemmatizer()  # Para lematización
@@ -89,13 +89,11 @@ def svm_model_custom(train,test, htgs=1):
     #x_train_bow = bow_vectorizer.fit_transform(x_train)
     #x_test_bow = bow_vectorizer.transform(x_test)
     
-    # Convertir el texto a representaciones numericas usando bag of characters
-    # Configurar el CountVectorizer para Bag-of-Characters
-    #ngram_vectorizer = CountVectorizer(ngram_range=(1, 3))
-    #x_train_ngram = ngram_vectorizer.fit_transform(x_train)
-    #x_test_ngram = ngram_vectorizer.transform(x_test)
+    ngram_vectorizer = CountVectorizer(ngram_range=(1, 3))
+    x_train_ngram = ngram_vectorizer.fit_transform(x_train)
+    x_test_ngram = ngram_vectorizer.transform(x_test)
     
-    
+    """
     fasttext.util.download_model('en', if_exists='ignore')  # English
     ft = fasttext.load_model('cc.en.300.bin')
 
@@ -108,25 +106,29 @@ def svm_model_custom(train,test, htgs=1):
 
     x_train_ft = np.vstack(x_train.apply(obtener_embedding_promedio))
     x_test_ft = np.vstack(x_test.apply(obtener_embedding_promedio))
-    
+    """
 
     
     # Crear el modelo SVM
     #svm_model_tfidf = SVC(kernel='linear')  # El kernel 'linear' es común en estos casos
     #svm_model_bow = SVC(kernel='linear')
-    #svm_model_ngram = SVC(kernel='linear')
-    svm_model_ft = SVC(kernel='linear')
+    svm_model_ngram = SVC(kernel='linear')
+    #svm_model_ft = SVC(kernel='linear')
 
     #svm_model_tfidf.fit(x_train_tfidf, y_train)
     #svm_model_bow.fit(x_train_bow, y_train)
-    #svm_model_ngram.fit(x_train_ngram, y_train)
-    svm_model_ft.fit(x_train_ft, y_train)
+    svm_model_ngram.fit(x_train_ngram, y_train)
+    #svm_model_ft.fit(x_train_ft, y_train)
 
     # Predecir en el conjunto de prueba
     #y_pred = svm_model_tfidf.predict(x_test_tfidf)
     #y_pred = svm_model_bow.predict(x_test_bow)
-    #y_pred = svm_model_ngram.predict(x_test_ngram)
-    y_pred = svm_model_ft.predict(x_test_ft)
+    y_pred = svm_model_ngram.predict(x_test_ngram)
+    #y_pred = svm_model_ft.predict(x_test_ft)
+
+    # Identificar los índices donde las predicciones son incorrectas
+    indices_falso_positivos = np.where((y_pred == 1) & (y_test == 0))[0]
+    indices_falso_negativos = np.where((y_pred == 0) & (y_test == 1))[0]
 
     # Calcular las métricas
     accuracy = accuracy_score(y_test, y_pred)
@@ -135,30 +137,42 @@ def svm_model_custom(train,test, htgs=1):
     recall = recall_score(y_test, y_pred)
 
     # Evaluar el rendimiento
-    print(f"Accuracy: {accuracy_score(y_test, y_pred)}")
+    print(f"Accuracy: {accuracy}")
     #print(classification_report(y_test, y_pred_tfidf))
     # Imprimir los resultados
     print("Precision:", precision)
     print("Recall:", recall)
     print("Macro-averaged F1-score:", f1)
 
+    # Mostrar algunos comentarios clasificados incorrectamente
+    print(f"\nAlgunos falsos positivos(de {len(indices_falso_positivos)}):")
+    for i in indices_falso_positivos[:3]:  # Muestra los primeros 5, ajusta según prefieras
+        print(f"\nComentario: {x_test[i]}")
+        print(f"Etiqueta real: {y_test[i]}, Predicción del modelo: {y_pred[i]}")
+    
+    print(f"\nAlgunos falsos negativos(de {len(indices_falso_negativos)}):")
+    for i in indices_falso_negativos[:3]:  # Muestra los primeros 5, ajusta según prefieras
+        print(f"\nComentario: {x_test[i]}")
+        print(f"Etiqueta real: {y_test[i]}, Predicción del modelo: {y_pred[i]}")
+
 
     cnf_matrix = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(8,6))
     plot_confusion_matrix(cnf_matrix, classes=['Not Hate','Hate'],normalize=True,
                         title='Confusion matrix with all features')
+    
     plt.savefig('grafico.png')
 
 
 #---------------------------------------------------
-def cross_evaluation(archive_train,archive_test,bool, hashtags=0):   
+def cross_evaluation(archive_train,archive_test,bool):   
     ds = pd.read_csv(archive_train)
     if bool:
-        ds = ds.rename(columns={'IsToxic': 'HS'})
+        ds = ds.rename(columns={'IsHatespeech': 'HS'})
         ds = ds.rename(columns={'Text': 'text'})
         ds['HS'] = ds['HS'].astype(int)
     # Dividir el dataset en entrenamiento y prueba
-    train_ds, test_ds = train_test_split(ds, test_size=0.2, random_state=41)
+    train_ds, test_ds = train_test_split(ds, test_size=0.2, random_state=41, stratify=ds['HS'])
 
     # Reiniciar los índices en ambos conjuntos
     train_ds = train_ds.reset_index(drop=True)
@@ -167,7 +181,7 @@ def cross_evaluation(archive_train,archive_test,bool, hashtags=0):
     test = pd.read_csv(archive_test)
     if not bool:
         test = test.rename(columns={'Text': 'text'})
-        test = test.rename(columns={'IsToxic': 'HS'})
+        test = test.rename(columns={'IsHatespeech': 'HS'})
         test['HS'] = test['HS'].astype(int)
     svm_model_custom(train,test)
 
@@ -211,8 +225,9 @@ text = """ingrese un valor numerico para elegir el dataset para el entrenamiento
 4 hatEval
 5 hatEval combinado
 6 hatEval combinado balanceado
-7 evaluacion cruzada train Hateval
-8 evaluacion cruzada train YOUTOXIC
+7 evaluacion cruzada train Hateval combinado
+8 evaluacion cruzada train Hateval combinado balanceado
+9 evaluacion cruzada train YOUTOXIC
 """
 
 archive = ''
@@ -243,6 +258,8 @@ elif choice == 6:
 elif choice == 7:
     cross_evaluation(HAT_EVAL,YOU_TOXIC,False)
 elif choice == 8:
+    cross_evaluation(HAT_EVAL_BAL,YOU_TOXIC,False)
+elif choice == 9:
     cross_evaluation(YOU_TOXIC,HAT_EVAL,True)
 else:
     print("Opción no válida.")

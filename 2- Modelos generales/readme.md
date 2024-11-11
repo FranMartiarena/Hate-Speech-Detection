@@ -4,13 +4,13 @@ Se decidió entrenar modelos support vector machine con los datasets vistos ante
 
 ## Proceso
 
-1. **Preprocesamiento de los datos**: Se limpiaran los datos eliminando simbolos y caracteres especiales. Con los hashtags se hizo una comparacion dejandolos y sacandolos, donde dejarlos dio mejores resultados. Cabe aclarar que esto es para hateval que fue sacado de twitter. Ademas 
+1. **Preprocesamiento de los datos**: Se limpiaran los datos eliminando simbolos y caracteres especiales. Con los hashtags se hizo una comparacion dejandolos y sacandolos, donde dejarlos dio mejores resultados. Cabe aclarar que esto es para hateval que fue sacado de twitter.
 
 2. **Conversion de comentarios**: Se convierten los comentarios a una representacion numerica. Exploraremos varios tipos de conversiones que se pueden hacer. En principio, usaremos One-Hot Encoders como TF-IDF, BagOfWords y N-gramas, y luego probaremos tecnicas mas complejas como Word Embeddings.    
 
 3. **Entrenamiento y evaluacion**: Primero se entrenará y evaluara un modelo lineal SVM sobre el mismo dataset. Luego se evaluara cada modelo sobre el dataset opuesto.   
 
-4. **Metricas y conclusiones**: Usando distintas metricas sacaremos conclusiones acerca de como le fue al modelo y que influyo en dicha performance. Las metricas que usaremos seran: matrices de confusion, accuracy, macro-averaged F1-score, precision, recall. 
+4. **Metricas y conclusiones**: Usando distintas metricas sacaremos conclusiones acerca de como le fue al modelo y que influyo en dicha performance. Las metricas que usaremos seran: matrices de confusion, accuracy, precision, recall, macro-averaged F1-score. 
 
 
 ## SVM con TF-IDF
@@ -83,3 +83,26 @@ Se decidió entrenar modelos support vector machine con los datasets vistos ante
 * Precision: **0.6925795053003534**
 * Recall: **0.716636197440585**
 * Macro-averaged F1-score: **0.6991780020476817**
+
+## Evaluacion Cruzada
+El modelo que tuvo mejor desempeño fue el que usa n-gramas entrenado en hateval balanceado, por lo tanto para medir su generalizacion lo evaluaremos sobre el dataset youtoxic sin balancear.
+
+![alt text](imagenes/hateval_balanceado_ngram_yt.png "Title")
+
+* Accuracy: **0.786**
+* Precision: **0.24666666666666667**
+* Recall: **0.26811594202898553**
+* Macro-averaged F1-score: **0.5659722222222222**
+
+Detecta muy mal hate speech!! Y tiene sentido, ya que si vemos el analisis de N-gramas y palabras frecuentes de ambos datsets, youtoxic tiene muchas palabras racistas que en los analsis de hateval ni aparecen, entonces se podria decir que le falta generalizacion al modelo. Por otro lado detecta muy bien lo que NO es hate speech, y hasta le hubiera ido mucho mejor si lo entrenabamos con el dataset sin balancear, ya que esta sesgado a no hate speech (tiene mas ejemplos).
+
+### Que pasa si evaluamos el modelo entrenado con youtoxic sobre hateval?
+
+![alt text](imagenes/youtoxic_ngram_hval.png "Title")
+
+* Accuracy: **0.5817692307692308**
+* Precision: **0.6299212598425197**
+* Recall: **0.014625228519195612**
+* Macro-averaged F1-score: **0.3810531616759179**
+
+Como era de esperar, no supo detectar hate. Asumimos que es por la misma razon que antes, no hay temas en comun. Igualmente sorprendio lo bien que detecta el No hate, mucho mejor que Hateval.
