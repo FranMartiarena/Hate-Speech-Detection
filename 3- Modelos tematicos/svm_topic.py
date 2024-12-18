@@ -35,8 +35,8 @@ def limpiar_texto(texto, hashtags):
 #Si false entonces entreno con youtoxic y lo pruebo en los comentarios racistas de hateval
 def topico(entrenar_hateval):
     # Cargar hateval con topicos y ytxic(que lo uso entero porq tiene un solo tipo de hate)
-    hateval = pd.read_csv('hateval_topics.csv')
-    youtoxic = pd.read_csv('data_set/youtoxic_english_1000.csv')
+    hateval = pd.read_csv('../data_set/hateval_topics.csv')
+    youtoxic = pd.read_csv('../data_set/data_set/youtoxic_english_1000.csv')
 
     ngram_vectorizer = CountVectorizer(ngram_range=(1, 3))
 
@@ -80,7 +80,7 @@ def topico(entrenar_hateval):
 
 def voto_mayoritario_hateval():
 
-    hateval = pd.read_csv('hateval_topics.csv')
+    hateval = pd.read_csv('../data_set/hateval_topics.csv')
 
     train, test = train_test_split(hateval, test_size=0.2, random_state=41, stratify=hateval['HS'])
 

@@ -17,7 +17,7 @@ def convinacion_hateval():
     df_combinado = pd.concat([pd.read_csv(archivo) for archivo in archivos_csv])
 
     # Especificar la carpeta donde se guardará el archivo combinado
-    carpeta_destino = 'data_set/'  # Cambia esta ruta a la carpeta deseada
+    carpeta_destino = '../data_set/'  # Cambia esta ruta a la carpeta deseada
 
     # Asegurarse de que la carpeta exista, si no, crearla
     if not os.path.exists(carpeta_destino):
