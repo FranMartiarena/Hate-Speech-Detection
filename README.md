@@ -2,7 +2,7 @@
 
 El discurso de odio puede definirse como discurso que expresa o incita a dañar a un individuo o a un grupo de personas en función de una o más de sus características personales, como el género, la raza, la religión, la sexualidad, etc.
 
-En este proyecto exploramos varias estrategias de deteccion de discurso de odio en redes, viendolo como un problema de clasificacion sobre conjuntos de datos ya existentes.
+En este proyecto exploramos varias estrategias de deteccion de discurso de odio en redes, viendolo como un problema de clasificacion y usando conjuntos de datos ya existentes.
 
 
 ## ¿Porque detectar discurso de odio?
