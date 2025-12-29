@@ -11,7 +11,7 @@ La deteccion del discurso de odio ayuda a mitigar las siguientes problematicas (
 
 - **Impacto Social Negativo**: El discurso de odio normaliza la violencia simbolica virtual, que puede escalar a violencia real. Tiene efectos medibles en salud mental, autocensura y exclusion en un espacio publico. Afecta desproporcionadamente a minorías
 - **Escala del problema**: Hay millones de mensajes de odio por dia, lo que es dificil de moderar por humanos a mano.
-- **Sesgos**: El discurso de odio en redes puede sesgar a las personas cambiando lo que parece aceptable.
+- **Sesgos**: El discurso de odio en redes puede sesgar a las personas cambiando lo que parece aceptable y alterando su realidad.
 
 Se pueden crear modelos que filtren o reduzcan estos daños.
 Es fundamental para proteger a los usuarios en línea del abuso y para permitir que los proveedores de servicios ofrezcan un entorno seguro y confiable para sus usuarios.
