@@ -16,8 +16,8 @@ La deteccion del discurso de odio ayuda a mitigar las siguientes problematicas (
 Se pueden crear modelos que filtren o reduzcan estos daños.
 Es fundamental para proteger a los usuarios en línea del abuso y para permitir que los proveedores de servicios ofrezcan un entorno seguro y confiable para sus usuarios.
 
----
-# Tareas por hacer
+
+## Tareas por hacer
 
 - Hacer un alisis de deteccion usando LLM's abiertos
 - Creacion ó busqueda de datasets mas abarcativos
