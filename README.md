@@ -1,26 +1,28 @@
 # Detección de odio en texto generado por usuarios
 
 El discurso de odio puede definirse como discurso que expresa o incita a dañar a un individuo o a un grupo de personas en función de una o más de sus características personales, como el género, la raza, la religión, la sexualidad, etc.
+
 En este proyecto exploramos varias estrategias de deteccion de discurso de odio en redes, viendolo como un problema de clasificacion sobre conjuntos de datos ya existentes.
+
 
 ## ¿Porque detectar discurso de odio?
 
-Creemos que la deteccion del discurso de odio ayuda a mitigar las siguientes problematicas generadas por el discurso de odio en redes:
+La deteccion del discurso de odio ayuda a mitigar las siguientes problematicas (Entre muchas otras):
 
-- **Impacto Social Negativo**: Se normaliza la violencia simbolica virtual, que puede escalar a violencia real. Tiene efectos medibles en salud mental, autocensura y exclusion en un espacio publico. Afecta desproporcionadamente a minorías
+- **Impacto Social Negativo**: El discurso de odio normaliza la violencia simbolica virtual, que puede escalar a violencia real. Tiene efectos medibles en salud mental, autocensura y exclusion en un espacio publico. Afecta desproporcionadamente a minorías
 - **Escala del problema**: Hay millones de mensajes de odio por dia, lo que es dificil de moderar por humanos a mano.
 - **Sesgos**: El discurso de odio en redes puede sesgar a las personas cambiando lo que parece aceptable.
 
-## Algunas Ideas
-
-(Explicar aplicaciones para resolver problematicas)
+Se pueden crear modelos que filtren o reduzcan estos daños.
+Es fundamental para proteger a los usuarios en línea del abuso y para permitir que los proveedores de servicios ofrezcan un entorno seguro y confiable para sus usuarios.
 
 ---
-# Que falta hacer?
+# Tareas por hacer
 
-- Analisis de deteccion usando LLM's abiertos
+- Hacer un alisis de deteccion usando LLM's abiertos
 - Creacion ó busqueda de datasets mas abarcativos
-- 
+- Ponerse al dia con las tendencias del area
+- Mejorar metricas y liberar modelos
 
 ---
 ## Creación entorno virtual
