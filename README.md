@@ -42,6 +42,6 @@ $ pip install -r requirements.txt
 
 El Analisis LDA se encuentra en el directorio de caracterizacion y analisis de datasets.
 Al ejecutar el archivo analysis_lda_custom.py este le pedira elegir alguno de los dataset disponibles para realizar el analisis. 
-Luego, para una muestra de los resultados, se guarda en la carpeta grafico_html un archivo html el cual se puede abrir en el navegador para ver el grafico.
+Luego, para una muestra de los resultados, se guarda en la carpeta grafico_html un archivo html el cual se puede abrir en el navegador para ver el grafico..
 
  
