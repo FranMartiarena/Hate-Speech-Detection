@@ -1,6 +1,6 @@
 ## Proceso
 
-1. **Deteccion de temas**: Se detectaron los temas relevantes de cada dataset usando LDA. En hateval los temas fueron contra mujeres e immigrantes, mientras que en youtoxic el unico tema fue de racismo. 
+1. **Deteccion de temas**: Se detectaron los temas relevantes de cada dataset usando LDA. En hateval los temas fueron contra mujeres e inmigrantes, mientras que en youtoxic el unico tema fue de racismo. 
 
 2. **Entrenamiento de modelos tematicos**: Se entrenaron modelos SVM usando n-gramas para poder clasificar odio de cada tema especifico detectado con LDA.
 
