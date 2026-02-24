@@ -49,3 +49,4 @@ Que es muy cercana a la cantidad de comentarios de cada tema segun el paper de h
 * Precision modelo general: **0.6911045943304008**
 * Recall modelo general: **0.6462522851919561**
 * Macro-averaged F1-score modelo general: **0.7199508297517693**
+.
