@@ -1,90 +1,53 @@
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+import torch
 import numpy as np
-from scipy.special import softmax
 import pandas as pd
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-import csv
-import urllib.request
-import torch  # Asegúrate de importar torch
-from file_paths import YOU_TOXIC, HAT_EVAL, HAT_EVAL_TEST, HAT_EVAL_DEV, HAT_EVAL_TRAIN  # Asegúrate de que esta ruta sea correcta
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from scipy.special import softmax
+from sklearn.metrics import classification_report, accuracy_score
+from file_paths import HAT_EVAL, YOU_TOXIC
 
-# Función para preprocesar el texto
-def preprocess(text):
-    new_text = []
-    for t in text.split(" "):
-        t = '@user' if t.startswith('@') and len(t) > 1 else t
-        t = 'http' if t.startswith('http') else t
-        new_text.append(t)
-    return " ".join(new_text)
+class RobertaEvaluator:
+    def __init__(self, model_name="cardiffnlp/twitter-roberta-base-hate"):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name).to(self.device)
+        self.labels_mapping = {0: 'not-hate', 1: 'hate'}
 
-# Definir la tarea y el modelo
-task = 'hate'
-MODEL = f"cardiffnlp/twitter-roberta-base-{task}"
+    def preprocess(self, text):
+        new_text = []
+        for t in str(text).split(" "):
+            t = '@user' if t.startswith('@') and len(t) > 1 else t
+            t = 'http' if t.startswith('http') else t
+            new_text.append(t)
+        return " ".join(new_text)
 
-# Cargar el tokenizador y el modelo
-tokenizer = AutoTokenizer.from_pretrained(MODEL)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+    def predict(self, texts):
+        self.model.eval()
+        processed_texts = [self.preprocess(t) for t in texts]
+        encoded_input = self.tokenizer(processed_texts, return_tensors='pt', 
+                                     padding=True, truncation=True, max_length=128).to(self.device)
+        
+        with torch.no_grad():
+            output = self.model(**encoded_input)
+        
+        logits = output.logits.cpu().numpy()
+        probs = softmax(logits, axis=1)
+        predictions = np.argmax(probs, axis=1)
+        return predictions, probs
 
-# Cargar el mapeo de etiquetas
-labels = []
-mapping_link = f"https://raw.githubusercontent.com/cardiffnlp/tweeteval/main/datasets/{task}/mapping.txt"
-with urllib.request.urlopen(mapping_link) as f:
-    html = f.read().decode('utf-8').split("\n")
-    csvreader = csv.reader(html, delimiter='\t')
-    labels = [row[1] for row in csvreader if len(row) > 1]
-
-# Cargar el dataset
-df = pd.read_csv(HAT_EVAL)  
-texts = df['text'].tolist()         
-true_labels = df['HS'].tolist()   
-
-
-true_labels = [str(label) for label in true_labels]
-
-# Definir el tamaño máximo para la entrada
-max_length = 512  
-
-# Clasificar cada texto y almacenar predicciones
-predicted_labels = []
-for text in texts:
-    # Preprocesar el texto
-    preprocessed_text = preprocess(text)
-
-    # Tokenizar y clasificar el texto
-    encoded_input = tokenizer(preprocessed_text, return_tensors='pt', padding=True, truncation=True, max_length=max_length)
-    
-    with torch.no_grad():  
-        output = model(**encoded_input)
-    
-    scores = output.logits.detach().numpy()[0]  
-    scores = softmax(scores)
-
-    # Obtener el índice de la etiqueta con mayor puntaje
-    ranking = np.argmax(scores)
-    predicted_labels.append(labels[ranking])  # Guardar la etiqueta predicha
-
-# Mapear las etiquetas verdaderas a las etiquetas predichas
-mapped_true_labels = ['hate' if label == '1' else 'not-hate' for label in true_labels]
-
-# Asegúrate de que las etiquetas verdaderas y predichas están dentro del conjunto de etiquetas
-unique_true_labels = set(mapped_true_labels)  # Cambiado para usar las etiquetas mapeadas
-unique_predicted_labels = set(predicted_labels)
-
-
-# Calcular métricas de evaluación
-accuracy = accuracy_score(mapped_true_labels, predicted_labels)  
-report = classification_report(
-    mapped_true_labels, 
-    predicted_labels, 
-    target_names=['hate', 'not-hate'], 
-    labels=['hate', 'not-hate'], 
-    zero_division=0 
-)
-conf_matrix = confusion_matrix(mapped_true_labels, predicted_labels)  
-
-# Mostrar resultados
-print(f"Exactitud del modelo: {accuracy:.4f}")
-print("Reporte de clasificación:")
-print(report)
-print("Matriz de confusión:")
-print(conf_matrix)
+    def run_evaluation(self, file_path, text_col, label_col, title):
+        print(f"\n Evaluando RoBERTa en: {title} ".center(60, "="))
+        df_full = pd.read_csv(file_path)
+        
+        # Si el dataset tiene menos de 500 filas, usa todas. Si tiene más, toma 500.
+        n_to_sample = min(len(df_full), 500)
+        df = df_full.sample(n_to_sample, random_state=42)
+        
+        texts = df[text_col].tolist()
+        # Asegurar que las etiquetas sean 0 y 1
+        y_true = df[label_col].apply(lambda x: 1 if str(x) in ['1', 'True', '1.0'] else 0).tolist()
+        
+        predictions, _ = self.predict(texts)
+        
+        print("\n" + classification_report(y_true, predictions, target_names=['not-hate', 'hate']))
+        return accuracy_score(y_true, predictions)
