@@ -1,0 +1,12 @@
+# Entornos virtuales
+venv/
+ENV/
+env/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Datos (opcional, pero recomendado si pesan mucho)
+*.csv
