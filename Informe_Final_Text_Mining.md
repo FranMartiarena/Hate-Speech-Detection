@@ -4,233 +4,270 @@
 
 ------------------------------------------------------------------------
 
-# 1. Introducción
+# 1. Resumen
 
-La detección automática de discurso de odio constituye uno de los
-desafíos más complejos dentro del procesamiento del lenguaje natural
-(NLP). A diferencia de otras tareas de clasificación textual, el hate
-speech no depende únicamente de la presencia de palabras ofensivas, sino
-de factores contextuales, culturales y pragmáticos.
+El presente trabajo aborda el desarrollo, análisis y comparación de
+distintos enfoques para la detección automática de discurso de odio
+utilizando dos conjuntos de datos: Hateval (comentarios de Twitter) y
+YouTube Toxicity (comentarios de YouTube).
 
-En este trabajo se desarrolló un análisis comparativo entre modelos
-clásicos basados en representaciones léxicas (n-gramas + SVM) y modelos
-contextuales basados en Transformers, utilizando los datasets Hateval
-(Twitter) y YouTube Toxicity (YouToxic). El eje central del proyecto fue
-analizar la capacidad de generalización entre dominios y evaluar si la
-especialización temática mejora el rendimiento.
+El proyecto se estructuró en cuatro ejes principales:
+
+1.  Análisis exploratorio mediante modelado temático (LDA).
+2.  Entrenamiento de modelos clásicos de clasificación (SVM).
+3.  Evaluación cruzada para analizar la transferencia entre dominios.
+4.  Comparación con un modelo de lenguaje basado en Transformers.
+
+Los resultados obtenidos permiten concluir que la detección de odio es
+altamente dependiente del dominio y que los modelos clásicos basados en
+n-gramas presentan limitaciones significativas de generalización. Los
+modelos contextuales muestran mejoras sustanciales, aunque tampoco
+resuelven completamente el problema.
 
 ------------------------------------------------------------------------
 
-# 2. Resumen Ejecutivo
+# 2. Hipótesis de Trabajo
 
-El proyecto se estructuró en cuatro etapas:
+1.  La detección de discurso de odio entrenada en un conjunto de datos
+    no generaliza adecuadamente a otro dominio diferente.
+2.  El uso de técnicas de modelado temático (LDA) permitirá identificar
+    con mayor precisión el discurso de odio asociado a temas específicos
+    dentro de los datasets.
 
-1.  Modelado temático con LDA para identificar subdominios de odio.
-2.  Entrenamiento de modelos SVM generales y especializados por tópico.
-3.  Evaluación cruzada para analizar transferencia entre dominios.
-4.  Comparación con un modelo de lenguaje preentrenado basado en
-    Transformers.
+------------------------------------------------------------------------
 
-Los resultados evidencian que:
+# 3. Objetivos
 
--   Los modelos clásicos presentan fuerte dependencia del dominio.
--   La especialización temática no resuelve el problema estructural de
+-   Entrenar un modelo capaz de detectar discurso de odio.
+-   Analizar su capacidad de generalización entre plataformas.
+-   Identificar temáticas comunes y diferenciales entre los datasets.
+-   Evaluar y contrastar modelos clásicos con modelos de lenguaje
+    preentrenados.
+-   Analizar errores y comportamientos extremos en escenarios de
     transferencia.
--   Los modelos contextuales mejoran significativamente el balance entre
-    precisión y recall.
--   Persisten desafíos asociados a diferencias de distribución entre
-    plataformas.
 
 ------------------------------------------------------------------------
 
-# 3. Hipótesis de Trabajo
-
-1.  Un modelo entrenado en un dominio específico no generaliza
-    adecuadamente a otro dominio con distinta distribución temática y
-    léxica.
-2.  El modelado temático permitirá mejorar la especialización y,
-    potencialmente, el rendimiento intra-dominio.
-
-------------------------------------------------------------------------
-
-# 4. Desarrollo Experimental
+# 4. Técnicas Relevantes
 
 ## 4.1 Modelado Temático (LDA)
 
-Se aplicó LDA para identificar estructuras latentes en los datasets. El
-análisis reveló:
+Se utilizó Latent Dirichlet Allocation (LDA) para identificar
+estructuras latentes en los textos.\
+En Hateval emergieron principalmente dos ejes temáticos: odio contra
+inmigrantes y misoginia.\
+En YouToxic predominó el racismo vinculado a conflictos sociales.
 
--   Hateval: fuerte presencia de discurso contra inmigrantes y
-    misoginia.
--   YouToxic: predominancia de racismo asociado a conflictos policiales.
+El LDA fue utilizado como herramienta exploratoria y de segmentación
+temática, no como clasificador final.
 
-El uso de LDA fue fundamental como herramienta exploratoria para
-segmentar los datos y entrenar modelos especializados.
+## 4.2 Representación Léxica
 
-Sin embargo, el modelado temático no incorpora semántica contextual
-profunda, sino co-ocurrencia estadística de términos.
+Se utilizó Bag of Words y n-gramas ponderados con TF-IDF para
+representar los textos en forma vectorial.
 
-------------------------------------------------------------------------
+## 4.3 Clasificación Supervisada
 
-## 4.2 Modelos Clásicos (SVM + n-gramas)
+Se implementaron modelos Support Vector Machines (SVM) por su:
 
-Los modelos fueron entrenados utilizando representación TF-IDF basada en
-n-gramas.
+-   Simplicidad.
+-   Buen rendimiento en alta dimensionalidad.
+-   Facilidad de implementación.
 
-### Resultados intra-dominio:
+## 4.4 Modelos de Lenguaje (LLMs)
 
-Buen desempeño dentro del mismo dataset.
-
-### Evaluación cruzada:
-
-Se observaron dos comportamientos extremos:
-
--   Modelo "paranoico": alto recall y baja precisión.
--   Modelo "ciego": baja capacidad de detección en dominio nuevo.
-
-Esto demuestra que los modelos aprenden correlaciones léxicas
-superficiales y no estructuras semánticas generalizables.
+Se evaluó un modelo preentrenado especializado en clasificación de odio
+utilizando la librería Transformers.\
+El modelo fue aplicado directamente a los comentarios para inferencia
+supervisada sin reentrenamiento completo.
 
 ------------------------------------------------------------------------
 
-## 4.3 Evaluación con Modelo Transformer
+# 5. Desarrollo Experimental (Punto 3 y 4 del Proyecto)
 
-Se utilizó un modelo preentrenado especializado en clasificación de
-discurso de odio.
+## 5.1 Modelos Temáticos y Transferibilidad
+
+Se entrenaron:
+
+-   Un modelo general por dataset.
+-   Modelos especializados por tópico identificado mediante LDA.
+
+### Evaluación cruzada
+
+Se aplicaron los modelos entrenados en un dataset sobre el otro.
 
 Resultados observados:
 
--   Mejor balance entre precisión y recall.
--   Reducción significativa de falsos positivos asociados a palabras
-    gatillo.
--   Mayor robustez frente a frases ambiguas.
+-   HatEval → YouToxic: alto recall, baja precisión (modelo
+    "paranoico").
+-   YouToxic → Hateval: muy bajo recall (modelo "ciego").
 
-Sin embargo, cuando la distribución temática cambia drásticamente,
-incluso el modelo contextual experimenta degradación de rendimiento.
-
-------------------------------------------------------------------------
-
-# 5. Análisis Profundo de Transferencia de Dominio
-
-La transferencia de dominio falló principalmente por:
-
-1.  Diferencias en longitud promedio de comentarios.
-2.  Diferencias en estilo discursivo (Twitter vs YouTube).
-3.  Diferencias en proporción de clases.
-4.  Diferencias en vocabulario específico de cada conflicto social.
-
-Los modelos clásicos basados en frecuencia no capturan intención
-comunicativa ni relaciones sintácticas complejas, lo que explica su baja
-capacidad de adaptación.
+Estos resultados confirman que los modelos basados en frecuencia
+aprenden correlaciones léxicas superficiales y no estructuras semánticas
+transferibles.
 
 ------------------------------------------------------------------------
 
-# 6. Relación entre Hipótesis, Objetivos y Estado Final
+## 5.2 Evaluación con Modelo de Lenguaje
 
-La primera hipótesis fue confirmada empíricamente. La degradación del
-F1-score en evaluación cruzada demuestra limitaciones estructurales de
-generalización.
+El modelo basado en Transformers mostró:
 
-La segunda hipótesis fue parcialmente validada: LDA permitió aislar
-temáticas coherentes, pero la especialización no compensó la falta de
-comprensión contextual.
+-   Mejor equilibrio entre precisión y recall.
+-   Menor dependencia de palabras gatillo.
+-   Mejor tratamiento de frases ambiguas.
 
-Los objetivos fueron alcanzados, logrando no solo implementar modelos,
-sino analizar críticamente sus limitaciones.
+No obstante, cuando la distribución temática difiere considerablemente,
+el rendimiento también se degrada.
 
 ------------------------------------------------------------------------
 
-# 7. Relación entre Planificación y Ejecución
+# 6. Problemas Detectados
 
-La planificación fue seguida en su mayoría:
+Durante el análisis se identificaron limitaciones importantes:
 
--   Recolección y limpieza de datos.
+-   Diferencias de distribución entre plataformas.
+-   Diferencias en longitud promedio de los comentarios.
+-   Diferencias en proporción de clases.
+-   Falta de anotación explícita de humor o ironía.
+-   Poca diversidad temática dentro de cada dataset.
+
+Se detectó además la necesidad de cuidado al unificar fuentes de datos,
+ya que cada plataforma presenta dinámicas discursivas distintas.
+
+------------------------------------------------------------------------
+
+# 7. Evaluación
+
+Para evaluar los modelos se utilizó:
+
+-   Matriz de confusión.
+-   Accuracy.
+-   Precision.
+-   Recall.
+-   F1-score.
+
+Se definió "generalizar bien" como mantener métricas similares al
+desempeño intra-dominio al aplicarse en otro dataset.
+
+La degradación observada confirma la dificultad estructural de la
+transferencia entre dominios en tareas de NLP.
+
+------------------------------------------------------------------------
+
+# 8. Relación entre Hipótesis, Objetivos y Estado Final
+
+La primera hipótesis fue confirmada: la generalización entre dominios
+fue limitada y dependiente del léxico y contexto específico.
+
+La segunda hipótesis fue parcialmente validada: LDA permitió identificar
+temas coherentes, pero la especialización temática no compensó la falta
+de comprensión contextual profunda.
+
+Los objetivos fueron alcanzados, aunque el análisis reveló que la mejora
+real proviene de modelos contextuales más que de la segmentación
+temática.
+
+------------------------------------------------------------------------
+
+# 9. Relación entre Planificación y Ejecución
+
+La planificación fue seguida en gran medida:
+
+-   Recolección y caracterización de datos.
+-   Preprocesamiento y análisis exploratorio.
 -   Modelado temático.
 -   Entrenamiento y evaluación cruzada.
 
-La etapa de evaluación de múltiples LLMs debió reducirse por
-limitaciones temporales, optándose por un modelo representativo.
+La etapa final (evaluación de múltiples LLMs) debió reducirse por
+limitaciones temporales, optándose por evaluar un único modelo
+representativo.
 
-Esta adaptación no comprometió la validez experimental, pero limitó la
-comparación amplia entre arquitecturas.
+Esto no invalida los resultados, pero limita la amplitud comparativa.
 
 ------------------------------------------------------------------------
 
-# 8. Librerías y Justificación Técnica
+# 10. Discusión sobre Devoluciones de Otros Grupos
 
-## Gensim
+Las devoluciones recibidas aportaron claridad y permitieron fortalecer
+el proyecto:
 
-Elegida para LDA por eficiencia y compatibilidad con PyLDAvis.
+-   Se aclaró el concepto de generalización.
+-   Se explicó que LDA cumple un rol exploratorio.
+-   Se detalló cómo se aplicó el modelo de lenguaje.
+-   Se discutió la problemática de humor y ambigüedad.
 
-## Scikit-learn
+Respecto a la detección de humor, se concluyó que depende del criterio
+de anotación humana y del contexto externo no disponible en los
+datasets.
 
-Utilizada para SVM y métricas por: - Facilidad de implementación. -
-Pipeline integrado. - Amplia documentación.
+------------------------------------------------------------------------
+
+# 11. Relación con Trabajo Previo (Bibliografía)
+
+El proyecto se apoyó en:
+
+-   Documentación del dataset Hateval.
+-   Estudios sobre métricas de evaluación en clasificación binaria.
+-   Literatura sobre domain adaptation en NLP.
+-   Investigaciones sobre embeddings contextuales y Transformers.
+
+Los resultados obtenidos son consistentes con investigaciones previas
+que señalan limitaciones de modelos basados en frecuencia y ventajas de
+representaciones contextuales.
+
+------------------------------------------------------------------------
+
+# 12. Librerías y Justificación Técnica
+
+## Gensim (LDA)
+
+Elegida por eficiencia y compatibilidad con visualización mediante
+PyLDAvis.
+
+## Scikit-learn (SVM y métricas)
+
+Seleccionada por: - Facilidad de implementación. - Integración de
+métricas. - Simplicidad para prototipado rápido.
 
 ## Transformers (Hugging Face)
 
-Seleccionada por: - Acceso a modelos preentrenados. - Simplicidad en
-inferencia. - Comunidad activa.
+Elegida por: - Acceso a modelos preentrenados. - Comunidad activa. -
+Documentación extensa.
 
-## Librerías complementarias
+## Librerías Complementarias
 
-Pandas, NumPy, Matplotlib y NLTK fueron utilizadas para manipulación,
-análisis y visualización.
-
-------------------------------------------------------------------------
-
-# 9. Discusión sobre Devoluciones Recibidas
-
-Las devoluciones destacaron:
-
--   Necesidad de clarificar el concepto de generalización.
--   Explicar el rol exploratorio del LDA.
--   Aclarar cómo se aplicaba el LLM.
--   Problematizar la ambigüedad y el humor.
-
-Se integraron estas sugerencias incorporando definiciones formales y
-ampliando la discusión sobre limitaciones semánticas.
-
-No fue posible incorporar etiquetado explícito de humor debido a
-restricciones del dataset.
+-   NLTK (stopwords).
+-   Pandas y NumPy (procesamiento).
+-   Matplotlib (visualización).
 
 ------------------------------------------------------------------------
 
-# 10. Relación con Trabajo Previo (Bibliografía)
+# 13. Implicaciones y Planificación Futura
 
-El trabajo se alinea con investigaciones previas que indican:
+Con un equipo de cinco personas durante un año, el proyecto podría
+ampliarse mediante:
 
--   Limitaciones de modelos basados en frecuencia.
--   Importancia de embeddings contextuales.
--   Dificultad estructural de la transferencia entre dominios en NLP.
+-   Construcción de un dataset multi-dominio balanceado.
+-   Inclusión de anotaciones explícitas de ironía y ambigüedad.
+-   Implementación de técnicas de domain adaptation.
+-   Comparación sistemática de múltiples modelos Transformer.
+-   Análisis de sesgos algorítmicos.
+-   Evaluación en múltiples idiomas.
 
-Los resultados obtenidos son consistentes con la literatura sobre domain
-adaptation y hate speech detection.
-
-------------------------------------------------------------------------
-
-# 11. Implicaciones y Continuación del Proyecto
-
-Con un equipo de cinco personas durante un año se podría:
-
--   Construir dataset multi-dominio balanceado.
--   Incorporar anotaciones de ironía.
--   Implementar técnicas de domain adaptation.
--   Analizar sesgos algorítmicos.
--   Comparar múltiples arquitecturas Transformer.
+Esto permitiría redefinir el punto de partida hacia un enfoque
+multi-dominio desde el inicio.
 
 ------------------------------------------------------------------------
 
-# 12. Conclusión Final
+# 14. Conclusión General
 
-El discurso de odio no puede reducirse a una lista de palabras
-prohibidas. Es un fenómeno contextual, dinámico y dependiente del
-dominio.
+La detección de discurso de odio es un problema complejo que trasciende
+la simple identificación de palabras ofensivas.
 
-Los modelos clásicos muestran limitaciones severas de transferencia. Los
-modelos contextuales representan un avance significativo, aunque el
-problema sigue abierto.
+Los modelos clásicos muestran fuertes limitaciones de transferencia.\
+Los modelos contextuales representan una mejora significativa, aunque el
+desafío persiste debido a la variabilidad cultural, contextual y
+temática del lenguaje humano.
 
-El proyecto demuestra que la verdadera dificultad no es detectar
-palabras ofensivas, sino comprender intención, contexto y variabilidad
-cultural.
+El proyecto no solo implementó modelos, sino que permitió comprender
+críticamente las dificultades estructurales del problema.
