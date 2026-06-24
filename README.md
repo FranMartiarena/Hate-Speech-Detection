@@ -6,9 +6,6 @@ En este proyecto exploramos varias estrategias de deteccion de discurso de odio 
 
 El objetivo de este trabajo es, por un lado, explorar distintas tecnicas de deteccion de discurso de odio y, por el otro, investigar formas en las que pueden ser solucionadas distintas problematicas utilizando estas tecnicas, siempre manteniendo un esquema abierto al publico.
 
-## Indice
-{Crear indice} 
-
 ## ¿Porque detectar discurso de odio?
 
 La deteccion del discurso de odio ayuda a mitigar las siguientes problematicas (Entre muchas otras):
@@ -104,6 +101,8 @@ El Analisis LDA se encuentra en el directorio de caracterizacion y analisis de d
 Al ejecutar el archivo analysis_lda_custom.py este le pedira elegir alguno de los dataset disponibles para realizar el analisis. 
 Luego, para una muestra de los resultados, se guarda en la carpeta grafico_html un archivo html el cual se puede abrir en el navegador para ver el grafico.
 
-## Bibliografia
-{Agregar links de trabajos parecidos}
+## Links de interes
+- [https://semeval.github.io/](https://semeval.github.io/)
+- [https://hatespeechdata.com/](https://hatespeechdata.com/)
+
  
