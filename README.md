@@ -1,6 +1,3 @@
-# Indice
-{Crear indice} 
-
 # Detección de odio en texto generado por usuarios
 
 El discurso de odio puede definirse como discurso que expresa o incita a dañar a un individuo o a un grupo de personas en función de una o más de sus características personales, como el género, la raza, la religión, la sexualidad, etc.
@@ -9,6 +6,8 @@ En este proyecto exploramos varias estrategias de deteccion de discurso de odio 
 
 El objetivo de este trabajo es, por un lado, explorar distintas tecnicas de deteccion de discurso de odio y, por el otro, investigar formas en las que pueden ser solucionadas distintas problematicas utilizando estas tecnicas, siempre manteniendo un esquema abierto al publico.
 
+## Indice
+{Crear indice} 
 
 ## ¿Porque detectar discurso de odio?
 
@@ -80,11 +79,9 @@ Por ultimo, se entrenó y realizo fine tuning a una arquitectura basada en Trans
 
 ## Tareas por hacer
 
-- Maneras de detectar el target group si hay Hate Speech
-- Hacer un alisis de deteccion usando LLM's abiertos
-- Creacion ó busqueda de datasets mas abarcativos, buscar generalizar la tarea y adaptar en tiempo real al contexto y cambios de lenguaje
-- Ponerse al dia con las tendencias del area
-- Mejorar metricas y liberar modelos
+- Maneras de detectar el target group si hay Hate Speech.
+- Creacion ó busqueda de datasets mas abarcativos, buscar generalizar la tarea y adaptar en tiempo real al contexto y cambios de lenguaje.
+- Explorar Modelos Multilingues
 
 ---
 
