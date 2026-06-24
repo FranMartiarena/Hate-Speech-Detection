@@ -1,7 +1,7 @@
 <center><h1>Datasets</h1></center>
 
 ### HatEval
-Es un dataset sacado de twitter, donde los datos estan etiquetados segun si contienen o no discurso de odio, en particular contra immigrantes y mujeres. Contiene 19,600 tweets, 13,000 en inglés y 6,600 en español.
+Es un dataset sacado de twitter, donde los datos estan etiquetados en odio/no odio, en particular contra immigrantes y mujeres. Contiene 19,600 tweets, 13,000 en inglés y 6,600 en español.
 Elegimos este dataset por la simpleza, consistencia, y balanceo de los datos.
 Como hateval provee 3 datasets: train, dev, test con cantidades distintas, lo que hicimos fue juntar estos 3 datasets para poder dividir 80% train y 20% test como habiamos propuesto. Los analisis siguientes se haran sobre el dataset combinado.
 ### Youtoxic
@@ -13,7 +13,7 @@ cantidad de etiquetas y simpleza.
 ### Balanceo de clases HatEval
 ![alt text](imagenes/hateval_conteo_clases2.png "Title")
 
-Estas son los conteos de clases de los 3 archivos que vienen por defecto en HatEval ingles. Siempre hay mas ejemplos que no son HS, y como en el paper no dice mucho, asumimos que puede ser porque, en general, el discurso de odio es menos común en la mayoría de los contextos.  
+Estas son los conteos de clases de los 3 archivos que vienen por defecto en HatEval ingles. Siempre hay mas ejemplos que no son HS, y como el paper no dice mucho, asumimos que puede ser porque el discurso de odio es menos común en la mayoría de los contextos.
 
 Si combinamos los 3 datasets nos queda:
 

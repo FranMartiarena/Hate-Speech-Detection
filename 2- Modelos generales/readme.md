@@ -106,3 +106,16 @@ Detecta muy mal hate speech!! Y tiene sentido, ya que si vemos el analisis de N-
 * Macro-averaged F1-score: **0.3810531616759179**
 
 Como era de esperar, no supo detectar hate. Asumimos que es por la misma razon que antes, no hay temas en comun. Igualmente sorprendio lo bien que detecta el No hate, mucho mejor que Hateval.
+
+### Finetuning DistilBERT sobre HatEval Español 
+
+![alt text](imagenes/pred_es_original.png "Title")
+
+### Finetuning DistilBERT sobre HatEval Ingles 
+
+![alt text](imagenes/pred_en_otro.png "Title")
+
+### Finetuning DistilBERT sobre HatEval en Ingles evaluado sobre Youtoxic
+
+![alt text](imagenes/pred_en_hateval_sobre_you.png "Title")
+
